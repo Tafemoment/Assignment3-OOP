@@ -27,7 +27,12 @@ public abstract class Zone : MonoBehaviour
     {
         isDeactivating = true;
 
-        yield return new WaitForSeconds(delay);
+        float timer = 0;
+        while (timer<delay)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
         go.SetActive(false);
 
         yield return new WaitForSeconds(returnDelay);

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PowerUp : Zone
+public abstract class PowerUp : Zone
 {
     protected abstract void PowerUpActivate(GameObject Marble);
     protected override void ZoneTrigger(GameObject Marble)
