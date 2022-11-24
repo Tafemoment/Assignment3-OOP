@@ -1,99 +1,44 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEditor;
-using System.IO;
+
+
 
 public class HighScoreManager : MonoBehaviour
 {
-    public float defaultScore;
-    public string playerName;
-    HighScoreInstance highScore;
+    private HighscoreData highscore;
+    public Text bill;
+    public Timer timer;
+    public SaveHighscoreToFile saveSystem;
 
     void Start()
     {
-        //logic
-
-        //check for saved highscore
-        //if yes, load saved data
-        //else create default
-
-        highScore = new HighScoreInstance(defaultScore);
-
+        timer = new Timer();
+        highscore = saveSystem.Load();
+        bill.text = "High Score:" + highscore.score;
+        GameStarted();
     }
 
-
-    //method to check new score is higher
-    public void CheckHighscore(float newScore)
+    private void Update()
     {
-        if (newScore > highScore.highscoreLmao)
+        if (Input.GetKeyDown(KeyCode.X))
         {
-            highScore = new HighScoreInstance(newScore, playerName);
+            saveSystem.Save(highscore);
+            bill.text = "High Score" = + highscore.score;
         }
-        //if yes, replace saved data
-        //else do nothing
-
     }
 
 
-
-
-
-    public string[] whatWeAreSaving;
-    //input values for saving
-    public string[] showWhatWeAreSplitting;
-    //display what we have loaded after we split a string
-    public string[] showStringsLoaded;
-    //put some of the values into an array
-    public int showIntLoaded;
-    //some of the values into an int
-    public string path = "Assets/Game Systems/Resources/Save/TextSaveFile.txt";
-    //Path for saving and loading
-    void Write()
+    public void GameStarted()
     {
-        StreamWriter writer = new StreamWriter(path, false);
-        //true adds on
-        //false replaces
-        for (int i = 0; i < whatWeAreSaving.Length; i++)
-        {
-            if (i < whatWeAreSaving.Length - 1)
-            //if its not the last piece of data
-            {
-                writer.Write(whatWeAreSaving[i] + '|');
-                //when saving add a marker | to sepperate the data value
-            }
-            else //if we are the last piece of data
-            {
-                writer.Write(whatWeAreSaving[i]);
-                //we dpmt meed a ,arler | on the end as we are the end so just save the data
-            }
-        }
-        writer.Close();
-        //this lets us stop the data stream aka stop the process of saving so shit dont break
-        AssetDatabase.ImportAsset(path);
-        //this next part is only thing tied to Unity Editor
-        //what this does is allows if we have the save file selected and displaying in the inspector... the inprctor updates when we save... else its look like shiz happens and that annoys Jay :)
+        timer.StartTimer();
     }
-    void Read()
+
+    public void GamesWon()
     {
-        StreamReader reader = new StreamReader(path);
-        string tempRead = reader.ReadLine();
-        //temporarily store the loaded info
-        showWhatWeAreSplitting = tempRead.Split('|');
-        //splitting up the line at the marker | and putting each value into our array
-        showStringsLoaded = new string[showWhatWeAreSplitting.Length - 1];
-        //seperate our last value is the goal of the following
-
-        //set our array to the size of our split data minus the last piece of data... as that will be an int
-        for (int i = 0; i < showStringsLoaded.Length; i++)
-        {
-            showStringsLoaded[i] = showWhatWeAreSplitting[i];
-        }
-        showIntLoaded = int.Parse(showWhatWeAreSplitting[showWhatWeAreSplitting.Length - 1]);
-        //assign and convert out int value
-        reader.Close();
-        //stop load shiz
+        float timerScore = timer.StopTimer();
+        highscore.SubmitScore(timerScore);
     }
-
-
 }
